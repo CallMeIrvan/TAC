@@ -11,11 +11,13 @@ import { CheckSquare, Circle, ChevronLeft, ChevronRight, Flag, Loader2, CheckCir
 import Link from "next/link";
 import Image from "next/image";
 
+import { Suspense } from "react";
+
 type Answers = Record<number, string[]>;
 // For true_false: key = questionId, value = Record<statementIndex, "True"|"False">
 type TFAnswers = Record<number, Record<number, "True" | "False">>;
 
-export default function ExamPage() {
+function ExamPageContent() {
     const router = useRouter();
     const searchParams = useSearchParams();
     const programId = searchParams.get("program") ?? "unknown";
@@ -548,5 +550,13 @@ export default function ExamPage() {
                 </div>
             </div>
         </div>
+    );
+}
+
+export default function ExamPage() {
+    return (
+        <Suspense fallback={<div className="min-h-screen bg-slate-50 flex items-center justify-center"><Loader2 className="h-10 w-10 animate-spin text-blue-600" /></div>}>
+            <ExamPageContent />
+        </Suspense>
     );
 }
