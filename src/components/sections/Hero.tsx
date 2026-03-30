@@ -40,7 +40,7 @@ export function Hero() {
         </p>
         <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
           <Button size="lg" className="h-12 px-8 text-base" asChild>
-            <Link href="/programs">
+            <Link href="/program">
               Lihat Program <ArrowRight className="ml-2 h-4 w-4" />
             </Link>
           </Button>

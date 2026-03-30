@@ -34,9 +34,9 @@ export default function RegisterPage() {
                     <Phone className="w-4 h-4 mr-2" />
                     {COMPANY_INFO.contacts.whatsapp}
                   </a>
-                  <a href="mailto:info@theaclassdps.com" className="flex items-center text-blue-700 hover:text-blue-800 bg-blue-100/50 px-3 py-1 rounded-full transition-colors">
+                  <a href={`mailto:${COMPANY_INFO.contacts.email}`} className="flex items-center text-blue-700 hover:text-blue-800 bg-blue-100/50 px-3 py-1 rounded-full transition-colors">
                     <Mail className="w-4 h-4 mr-2" />
-                    info@theaclassdps.com
+                    {COMPANY_INFO.contacts.email}
                   </a>
                 </div>
               </div>

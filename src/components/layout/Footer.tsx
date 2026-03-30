@@ -43,9 +43,32 @@ export function Footer() {
           <div>
             <h3 className="text-lg font-bold text-white mb-4">Hubungi Kami</h3>
             <ul className="space-y-4 text-sm text-slate-400">
-              <li className="flex items-start gap-3">
-                <MapPin className="h-5 w-5 shrink-0 mt-0.5 text-blue-500" />
-                <span>{COMPANY_INFO.address}</span>
+              <li className="flex flex-col gap-3">
+                <div className="flex items-start gap-3">
+                  <MapPin className="h-5 w-5 shrink-0 mt-0.5 text-blue-500" />
+                  <span>{COMPANY_INFO.address}</span>
+                </div>
+                {/* Minimap (Clickable) */}
+                <a 
+                  href="https://maps.google.com/?q=The+A+Class+Denpasar,+Jl.+Tukad+Yeh+Aya+IX+No.21c" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="block mt-1 rounded-xl overflow-hidden border border-slate-800 hover:border-blue-500/50 transition-all relative group"
+                >
+                  <iframe
+                    src="https://maps.google.com/maps?q=The%20A%20Class%20Denpasar&t=&z=15&ie=UTF8&iwloc=&output=embed"
+                    width="100%"
+                    height="120"
+                    style={{ border: 0 }}
+                    allowFullScreen={false}
+                    loading="lazy"
+                    title="Lokasi TAC"
+                    className="pointer-events-none grayscale opacity-70 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-500" 
+                  />
+                  <div className="absolute bottom-0 w-full bg-slate-950/90 backdrop-blur-sm border-t border-slate-800 text-center py-2 text-xs font-medium text-blue-400 group-hover:text-blue-300">
+                    Buka di Google Maps
+                  </div>
+                </a>
               </li>
               <li className="flex items-center gap-3">
                 <Phone className="h-4 w-4 shrink-0 text-green-500" />

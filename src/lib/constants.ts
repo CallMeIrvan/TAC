@@ -6,12 +6,12 @@ export const COMPANY_INFO = {
   location_lpk: "Jl. Tukad Badung No.18B, Renon, Denpasar, Bali",
   contacts: {
     whatsapp: "+6282135146105",
-    email: "info@theaclassdps.com",
+    email: "theaclassdps@gmail.com",
     maps_embed: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3944.0967523927656!2d115.2339093!3d-8.6823397!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2dd240f2e0f0f0f0%3A0x0!2zOMKwNDAnNTYuNCJTIDExNcKwMTQnMDIuMSJF!5e0!3m2!1sen!2sid!4v1620000000000!5m2!1sen!2sid", // Generic placeholder
   },
   socials: [
-    { name: "Instagram", url: "#" },
-    { name: "Facebook", url: "#" },
+    { name: "Instagram", url: "https://www.instagram.com/the_aclass?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==" },
+    { name: "Facebook", url: "https://www.facebook.com/tac.bali.10" },
   ],
 };
 
