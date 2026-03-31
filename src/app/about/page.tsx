@@ -21,12 +21,12 @@ const TEAM = [
   { name: "Tim Pengajar 3", role: "Accounting Specialist", image: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?q=80&w=1000&auto=format&fit=crop" },
 ];
 
-// Temporary data for Gallery
+// Data for Gallery
 const GALLERY = [
-  "https://images.unsplash.com/photo-1524178232363-1fb2b075b655?q=80&w=1000&auto=format&fit=crop",
-  "https://images.unsplash.com/photo-1517048676732-d65bc937f952?q=80&w=1000&auto=format&fit=crop",
-  "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?q=80&w=1000&auto=format&fit=crop",
-  "https://images.unsplash.com/photo-1434030216411-0b793f4b4173?q=80&w=1000&auto=format&fit=crop",
+  "/dokumentasi/1.jpg",
+  "/dokumentasi/2.jpg",
+  "/dokumentasi/3.jpg",
+  "/dokumentasi/4.jpg",
 ];
 
 export default function AboutPage() {

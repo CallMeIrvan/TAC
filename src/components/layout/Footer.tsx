@@ -43,6 +43,18 @@ export function Footer() {
           <div>
             <h3 className="text-lg font-bold text-white mb-4">Hubungi Kami</h3>
             <ul className="space-y-4 text-sm text-slate-400">
+              <li className="flex items-center gap-3">
+                <Phone className="h-4 w-4 shrink-0 text-green-500" />
+                <a href={`https://wa.me/${COMPANY_INFO.contacts.whatsapp.replace(/\+/g, '')}`} className="hover:text-white">
+                  {COMPANY_INFO.contacts.whatsapp}
+                </a>
+              </li>
+              <li className="flex items-center gap-3">
+                <Mail className="h-4 w-4 shrink-0 text-yellow-500" />
+                <a href={`mailto:${COMPANY_INFO.contacts.email}`} className="hover:text-white">
+                  {COMPANY_INFO.contacts.email}
+                </a>
+              </li>
               <li className="flex flex-col gap-3">
                 <div className="flex items-start gap-3">
                   <MapPin className="h-5 w-5 shrink-0 mt-0.5 text-blue-500" />
@@ -68,18 +80,6 @@ export function Footer() {
                   <div className="absolute bottom-0 w-full bg-slate-950/90 backdrop-blur-sm border-t border-slate-800 text-center py-2 text-xs font-medium text-blue-400 group-hover:text-blue-300">
                     Buka di Google Maps
                   </div>
-                </a>
-              </li>
-              <li className="flex items-center gap-3">
-                <Phone className="h-4 w-4 shrink-0 text-green-500" />
-                <a href={`https://wa.me/${COMPANY_INFO.contacts.whatsapp.replace(/\+/g, '')}`} className="hover:text-white">
-                  {COMPANY_INFO.contacts.whatsapp}
-                </a>
-              </li>
-              <li className="flex items-center gap-3">
-                <Mail className="h-4 w-4 shrink-0 text-yellow-500" />
-                <a href={`mailto:${COMPANY_INFO.contacts.email}`} className="hover:text-white">
-                  {COMPANY_INFO.contacts.email}
                 </a>
               </li>
             </ul>

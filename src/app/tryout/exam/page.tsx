@@ -33,14 +33,36 @@ function ExamPageContent() {
     const [isSubmitted, setIsSubmitted] = useState(false);
     const [score, setScore] = useState({ correct: 0, total: 0 });
 
-    // Auth gate
+    // Auth gate and purchase verification
     useEffect(() => {
-        const unsub = onAuthStateChanged(auth, (user) => {
-            if (!user) router.push("/tryout/login");
-            else setIsAuthChecked(true);
+        const unsub = onAuthStateChanged(auth, async (user) => {
+            if (!user) {
+                router.push("/tryout/login");
+            } else {
+                try {
+                    // Check if user has an approved order for this explicit program
+                    const q = query(
+                        collection(db, "orders"), 
+                        where("uid", "==", user.uid), 
+                        where("paymentStatus", "==", "approved"),
+                        where("program", "==", programId)
+                    );
+                    const snap = await getDocs(q);
+                    
+                    if (snap.empty) {
+                        // Kicked out back to dashboard if no valid purchase is found
+                        router.push("/tryout/dashboard");
+                    } else {
+                        setIsAuthChecked(true);
+                    }
+                } catch (e) {
+                    console.error("Order verification failed", e);
+                    router.push("/tryout/dashboard");
+                }
+            }
         });
         return () => unsub();
-    }, [router]);
+    }, [router, programId]);
 
     // Load questions from Firestore
     useEffect(() => {
