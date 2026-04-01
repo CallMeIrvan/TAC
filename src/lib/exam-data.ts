@@ -17,6 +17,17 @@ export interface TrueFalseStatement {
   answer: "True" | "False";
 }
 
+export interface DragDropCategory {
+  id: string;
+  text: string;
+}
+
+export interface DragDropItem {
+  id: string;
+  text: string;
+  categoryId: string;
+}
+
 export interface ExamQuestion {
   id: number;
   question: string;
@@ -29,6 +40,9 @@ export interface ExamQuestion {
   note?: string;
   /** For true_false type: list of statements each with a True/False answer */
   statements?: TrueFalseStatement[];
+  /** For drag_and_drop type */
+  dragCategories?: DragDropCategory[];
+  dragItems?: DragDropItem[];
 }
 
 // ─── All 73 questions ────────────────────────────────────────

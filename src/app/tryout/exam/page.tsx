@@ -16,6 +16,7 @@ import { Suspense } from "react";
 type Answers = Record<number, string[]>;
 // For true_false: key = questionId, value = Record<statementIndex, "True"|"False">
 type TFAnswers = Record<number, Record<number, "True" | "False">>;
+type DDAnswers = Record<number, Record<string, string>>;
 
 function ExamPageContent() {
     const router = useRouter();
@@ -25,10 +26,13 @@ function ExamPageContent() {
 
     const [isAuthChecked, setIsAuthChecked] = useState(false);
     const [isLoadingQuestions, setIsLoadingQuestions] = useState(true);
+    const [fetchErrorMsg, setFetchErrorMsg] = useState("");
     const [examTitle, setExamTitle] = useState("");
     const [questions, setQuestions] = useState<ExamQuestion[]>([]);
     const [answers, setAnswers] = useState<Answers>({});
     const [tfAnswers, setTfAnswers] = useState<TFAnswers>({});
+    const [ddAnswers, setDdAnswers] = useState<DDAnswers>({});
+    const [activeDragCategory, setActiveDragCategory] = useState<string | null>(null);
     const [currentIndex, setCurrentIndex] = useState(0);
     const [isSubmitted, setIsSubmitted] = useState(false);
     const [score, setScore] = useState({ correct: 0, total: 0 });
@@ -69,22 +73,52 @@ function ExamPageContent() {
         const fetchRemoteQuestions = async () => {
              setIsLoadingQuestions(true);
              try {
-                 const q = query(
-                     collection(db, "exams"), 
-                     where("programId", "==", programId),
-                     where("type", "==", examType)
-                 );
+                 // Tarik semua exams tanpa filter where() untuk menghindari masalah spasi tersembunyi (trailing space)
+                 // atau error index / permissions parsial. Filter dilakukan di sisi client.
+                 const q = query(collection(db, "exams"));
                  const snap = await getDocs(q);
-                 if (!snap.empty) {
-                     const data = snap.docs[0].data();
-                     // Safely assume structure matches ExamQuestion
-                     setQuestions(data.questions || []);
-                     setExamTitle(data.title || `Latihan ${programId.toUpperCase()}`);
+                 
+                 const safeTargetProgramId = String(programId).trim().toLowerCase();
+                 
+                 // Sistem sangat pintar dan fleksibel: 
+                 // Admin bebas mengetik nama panjang seperti "ic3-gs6-level1-certiport" atau "ic3-keren".
+                 // Selama ID di URL (contoh: "ic3") menjadi bagian dari kata yang diketik Admin, sistem akan langsung menganggap COCOK.
+                 const matchedDocs = snap.docs
+                    .map(d => d.data())
+                    .filter(d => {
+                        const dbProgId = String(d.programId || "").trim().toLowerCase();
+                        const isTypeMatch = String(d.type).trim() === String(examType).trim();
+                        
+                        // Cek apakah sama persis ATAU apakah salah satunya bagian dari kalimat yang lain
+                        const isIdMatch = dbProgId === safeTargetProgramId || 
+                                          dbProgId.includes(safeTargetProgramId) || 
+                                          safeTargetProgramId.includes(dbProgId);
+                                          
+                        return isTypeMatch && isIdMatch;
+                    });
+
+                 if (matchedDocs.length > 0) {
+                     // Cari dokumen yang punya pertanyaan (mencegah terambilnya dokumen kosong palsu/ghost)
+                     let bestDoc = matchedDocs[0];
+                     for (const d of matchedDocs) {
+                         if (d.questions && d.questions.length > 0) {
+                             bestDoc = d;
+                             break;
+                         }
+                     }
+                     
+                     setQuestions(bestDoc.questions || []);
+                     setExamTitle(bestDoc.title || `Latihan ${programId.toUpperCase()}`);
                  } else {
                      setQuestions([]);
+                     const available = Array.from(new Set(snap.docs.map(d => String(d.data().programId)))).join(", ");
+                     setFetchErrorMsg(`DEBUG Mismatch: URL mencari ID "${programId}". Tapi Firebase HANYA memiliki ID berikut: [${available}]`);
                  }
-             } catch (e) {
+             } catch (error) {
+                 const e = error as Error;
                  console.error("Failed to load exams", e);
+                 setFetchErrorMsg(e.message || "Unknown error occurred.");
+                 alert("Error gagal mengambil soal dari Firebase Server:\n\n" + e.message); // ALERT KERAS AGAR USER TAHU JIKA INI PERMISSION ERROR
              } finally {
                  setIsLoadingQuestions(false);
              }
@@ -122,6 +156,13 @@ function ExamPageContent() {
         }));
     }, []);
 
+    const handleDDToggle = useCallback((qId: number, itemId: string, catId: string) => {
+        setDdAnswers(prev => ({
+            ...prev,
+            [qId]: { ...(prev[qId] ?? {}), [itemId]: catId },
+        }));
+    }, []);
+
     const handleSubmit = () => {
         let correct = 0;
         questions.forEach(q => {
@@ -129,10 +170,14 @@ function ExamPageContent() {
                 const tfa = tfAnswers[q.id] ?? {};
                 const allCorrect = q.statements.every((s, i) => tfa[i] === s.answer);
                 if (allCorrect) correct++;
+            } else if (q.type === "drag_and_drop" && q.dragItems) {
+                const dda = ddAnswers[q.id] ?? {};
+                const allCorrect = q.dragItems.every(item => dda[item.id] === item.categoryId);
+                if (allCorrect) correct++;
             } else {
                 const userAns = (answers[q.id] ?? []).sort().join(",");
                 const correctAns = [...q.answers].sort().join(",");
-                if (userAns === correctAns) correct++;
+                if (userAns === correctAns && correctAns !== "") correct++;
             }
         });
         setScore({ correct, total: totalQ });
@@ -149,11 +194,15 @@ function ExamPageContent() {
         return "idle";
     };
 
-    // Count answered questions (including true_false)
+    // Count answered questions (including true_false and drag_and_drop)
     const answeredCount = questions.filter(q => {
         if (q.type === "true_false") {
             const tfa = tfAnswers[q.id] ?? {};
             return q.statements && q.statements.every((_, i) => tfa[i] !== undefined);
+        }
+        if (q.type === "drag_and_drop") {
+            const dda = ddAnswers[q.id] ?? {};
+            return q.dragItems && q.dragItems.every(item => dda[item.id] !== undefined);
         }
         return (answers[q.id] ?? []).length > 0;
     }).length;
@@ -174,7 +223,10 @@ function ExamPageContent() {
                 <div className="bg-white p-8 rounded-2xl shadow-sm border border-slate-200">
                     <XCircle className="w-16 h-16 text-slate-300 mx-auto mb-4" />
                     <h2 className="text-xl font-bold text-slate-800 mb-2">Ujian Belum Tersedia</h2>
-                    <p className="text-slate-500 mb-6">Paket soal untuk sertifikasi ini belum dibuat oleh Admin.</p>
+                    <p className="text-slate-500 mb-6">
+                        Paket soal untuk sertifikasi ini belum dibuat oleh Admin.<br/><br/>
+                        {fetchErrorMsg && <strong className="text-red-600 block bg-red-50 p-3 rounded border border-red-100 text-xs text-left">{fetchErrorMsg}</strong>}
+                    </p>
                     <Link href="/tryout/dashboard">
                         <Button>Kembali ke Dashboard</Button>
                     </Link>
@@ -211,6 +263,9 @@ function ExamPageContent() {
                             if (q.type === "true_false" && q.statements) {
                                 const tfa = tfAnswers[q.id] ?? {};
                                 isFullyCorrect = q.statements.every((s, i) => tfa[i] === s.answer);
+                            } else if (q.type === "drag_and_drop" && q.dragItems) {
+                                const dda = ddAnswers[q.id] ?? {};
+                                isFullyCorrect = q.dragItems.every(item => dda[item.id] === item.categoryId);
                             } else {
                                 const userAns = answers[q.id] ?? [];
                                 isFullyCorrect = [...q.answers].sort().join(",") === [...userAns].sort().join(",");
@@ -250,6 +305,32 @@ function ExamPageContent() {
                                                                 <td className="py-2 pr-3 text-slate-700">{s.text}</td>
                                                                 <td className={`text-center font-semibold py-2 ${isRight ? "text-green-700" : "text-red-700"}`}>{userVal ?? "-"}</td>
                                                                 <td className="text-center font-semibold py-2 text-green-700">{correct}</td>
+                                                            </tr>
+                                                        );
+                                                    })}
+                                                </tbody>
+                                            </table>
+                                        ) : q.type === "drag_and_drop" && q.dragItems ? (
+                                            <table className="w-full text-xs border-collapse">
+                                                <thead>
+                                                    <tr>
+                                                        <th className="text-left text-slate-500 pb-1 font-medium">Item</th>
+                                                        <th className="text-center text-slate-500 pb-1 font-medium w-24">Jawaban Anda</th>
+                                                        <th className="text-center text-slate-500 pb-1 font-medium w-24">Kunci Benar</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    {q.dragItems.map((item, i) => {
+                                                        const dda = ddAnswers[q.id] ?? {};
+                                                        const userCatId = dda[item.id];
+                                                        const userCatText = q.dragCategories?.find(c => c.id === userCatId)?.text || "-";
+                                                        const correctCatText = q.dragCategories?.find(c => c.id === item.categoryId)?.text || "-";
+                                                        const isRight = userCatId === item.categoryId;
+                                                        return (
+                                                            <tr key={i} className={`border-t ${isRight ? "bg-green-50" : "bg-red-50"}`}>
+                                                                <td className="py-2 pr-3 text-slate-700">{item.text}</td>
+                                                                <td className={`text-center font-semibold py-2 ${isRight ? "text-green-700" : "text-red-700"}`}>{userCatText}</td>
+                                                                <td className="text-center font-semibold py-2 text-green-700">{correctCatText}</td>
                                                             </tr>
                                                         );
                                                     })}
@@ -438,86 +519,74 @@ function ExamPageContent() {
                 )}
 
                 {/* ── DRAG AND DROP OPTIONS ── */}
-                {currentQ.type === "drag_and_drop" && (
-                    <div className="flex flex-col md:flex-row gap-6">
-                        {/* Pilihan (Source) */}
-                        <div 
-                            className="flex-1 min-h-[200px] border-2 border-dashed border-slate-300 rounded-xl p-4 bg-slate-50 flex flex-col gap-2 transition-colors"
-                            onDragOver={(e) => { e.preventDefault(); e.currentTarget.classList.add("bg-slate-100"); }}
-                            onDragLeave={(e) => { e.currentTarget.classList.remove("bg-slate-100"); }}
-                            onDrop={(e) => {
-                                e.preventDefault();
-                                e.currentTarget.classList.remove("bg-slate-100");
-                                const label = e.dataTransfer.getData("text/plain");
-                                if(!label) return;
-                                setAnswers(prev => {
-                                    const curr = prev[currentQ.id] || [];
-                                    return { ...prev, [currentQ.id]: curr.filter(l => l !== label) };
-                                });
-                            }}
-                        >
-                            <h4 className="text-sm font-bold text-slate-500 mb-2 border-b pb-2">Daftar Pilihan</h4>
-                            {currentQ.options.filter(opt => !(answers[currentQ.id] || []).includes(opt.label)).map(opt => (
-                                <div 
-                                    key={opt.label}
-                                    draggable
-                                    onDragStart={(e) => e.dataTransfer.setData("text/plain", opt.label)}
-                                    className="bg-white p-3 rounded border border-slate-200 shadow-sm cursor-grab active:cursor-grabbing hover:border-blue-300 text-sm font-medium text-slate-700 select-none"
-                                >
-                                    {opt.text}
-                                </div>
-                            ))}
-                            {currentQ.options.filter(opt => !(answers[currentQ.id] || []).includes(opt.label)).length === 0 && (
-                                <p className="text-xs text-slate-400 text-center mt-4">Pilihan habis</p>
-                            )}
+                {currentQ.type === "drag_and_drop" && currentQ.dragCategories && currentQ.dragItems && (
+                    <div className="flex flex-col md:flex-row gap-8">
+                        {/* Kiri: Kategori (Source) */}
+                        <div className="w-full md:w-1/3 flex flex-col gap-3">
+                            <h4 className="text-sm font-bold text-slate-500 mb-2 border-b pb-2">Kategori Pilihan</h4>
+                            <div className="grid grid-cols-2 lg:grid-cols-1 gap-2">
+                                {currentQ.dragCategories.map(cat => (
+                                    <div 
+                                        key={cat.id}
+                                        draggable
+                                        onDragStart={(e) => {
+                                           e.dataTransfer.setData("text/plain", cat.id);
+                                           setActiveDragCategory(cat.id);
+                                        }}
+                                        onDragEnd={() => setActiveDragCategory(null)}
+                                        onClick={() => setActiveDragCategory(cat.id)}
+                                        className={`bg-white p-4 rounded-xl border-2 text-center cursor-grab active:cursor-grabbing text-sm font-bold transition-all shadow-sm select-none
+                                            ${activeDragCategory === cat.id ? "border-blue-500 ring-2 ring-blue-200 bg-blue-50 text-blue-700" : "border-slate-200 text-slate-700 hover:border-blue-300 hover:bg-slate-50"}`}
+                                    >
+                                        {cat.text}
+                                    </div>
+                                ))}
+                            </div>
+                            <p className="text-xs text-slate-400 mt-2 text-center lg:text-left">Tarik (Drag) kategori di atas, atau sentuh/klik lalu pilih targetnya untuk perangkat HP.</p>
                         </div>
 
-                        {/* Jawaban (Target) */}
-                        <div 
-                            className="flex-1 min-h-[200px] border-2 border-slate-300 rounded-xl p-4 bg-blue-50/50 flex flex-col gap-2 transition-colors"
-                            onDragOver={(e) => { e.preventDefault(); e.currentTarget.classList.add("bg-blue-100"); }}
-                            onDragLeave={(e) => { e.currentTarget.classList.remove("bg-blue-100"); }}
-                            onDrop={(e) => {
-                                e.preventDefault();
-                                e.currentTarget.classList.remove("bg-blue-100");
-                                const label = e.dataTransfer.getData("text/plain");
-                                if(!label) return;
-                                setAnswers(prev => {
-                                    const curr = prev[currentQ.id] || [];
-                                    if(curr.includes(label)) return prev;
-                                    return { ...prev, [currentQ.id]: [...curr, label] };
-                                });
-                            }}
-                        >
-                            <h4 className="text-sm font-bold text-blue-800 mb-2 border-b border-blue-200 pb-2 flex items-center gap-2">
-                                Kotak Jawaban 
-                                <span className="text-xs font-normal text-blue-500 bg-blue-100 px-2 py-0.5 rounded-full">Drag ke sini</span>
-                            </h4>
-                            {(answers[currentQ.id] || []).map(label => {
-                                const opt = currentQ.options.find(o => o.label === label);
-                                if(!opt) return null;
+                        {/* Kanan: Item & Drop Zones */}
+                        <div className="w-full md:w-2/3 flex flex-col gap-3">
+                            <h4 className="text-sm font-bold text-slate-500 mb-2 border-b pb-2">Area Jawaban</h4>
+                            {currentQ.dragItems.map(item => {
+                                const userCatId = (ddAnswers[currentQ.id] || {})[item.id];
+                                const catObj = currentQ.dragCategories!.find(c => c.id === userCatId);
+                                
                                 return (
-                                    <div 
-                                        key={opt.label}
-                                        draggable
-                                        onDragStart={(e) => e.dataTransfer.setData("text/plain", opt.label)}
-                                        className="bg-white p-3 rounded border-2 border-blue-400 shadow flex items-center justify-between cursor-grab active:cursor-grabbing text-sm font-medium text-blue-900 select-none"
-                                    >
-                                        <span>{opt.text}</span>
-                                        <button 
-                                            onClick={() => setAnswers(prev => ({ ...prev, [currentQ.id]: prev[currentQ.id].filter(l => l !== label) }))}
-                                            className="text-red-400 hover:text-red-600 rounded-full p-1 transition-colors"
+                                    <div key={item.id} className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 bg-white p-3 rounded-xl border border-slate-200 shadow-sm">
+                                        {/* Drop Zone */}
+                                        <div 
+                                            className={`w-full sm:w-1/2 p-4 rounded-lg border-2 border-dashed flex items-center justify-center transition-all cursor-pointer min-h-[60px]
+                                                ${userCatId ? "border-solid border-green-500 bg-green-50" : "border-slate-300 bg-slate-50 hover:bg-slate-100 hover:border-blue-400"}`}
+                                            onDragOver={(e) => { e.preventDefault(); e.currentTarget.classList.add("bg-blue-100", "border-blue-400"); }}
+                                            onDragLeave={(e) => { e.currentTarget.classList.remove("bg-blue-100", "border-blue-400"); }}
+                                            onDrop={(e) => {
+                                                e.preventDefault();
+                                                e.currentTarget.classList.remove("bg-blue-100", "border-blue-400");
+                                                const catId = e.dataTransfer.getData("text/plain");
+                                                if(catId) handleDDToggle(currentQ.id, item.id, catId);
+                                            }}
+                                            onClick={() => {
+                                                if (activeDragCategory) {
+                                                    handleDDToggle(currentQ.id, item.id, activeDragCategory);
+                                                    setActiveDragCategory(null);
+                                                }
+                                            }}
                                         >
-                                           <XCircle className="w-4 h-4" />
-                                        </button>
+                                            {userCatId ? (
+                                                <span className="font-bold text-green-700 text-sm">{catObj?.text}</span>
+                                            ) : (
+                                                <span className="text-xs text-slate-400 font-medium">Lepas/Sentuh di sini</span>
+                                            )}
+                                        </div>
+                                        
+                                        {/* Item Text */}
+                                        <div className="w-full sm:w-1/2 text-sm font-medium text-slate-800 text-center sm:text-left flex items-center">
+                                            {item.text}
+                                        </div>
                                     </div>
                                 )
                             })}
-                            {(answers[currentQ.id] || []).length === 0 && (
-                                <div className="flex-1 flex flex-col items-center justify-center text-slate-400 border-2 border-dashed border-blue-200 rounded-lg bg-white/50 m-2">
-                                    <p className="text-sm font-medium">Lepaskan (Drop) jawaban di sini</p>
-                                </div>
-                            )}
                         </div>
                     </div>
                 )}
