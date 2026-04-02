@@ -8,7 +8,7 @@ import { db, auth } from "@/lib/firebase/client";
 import { getPrograms, Program } from "@/lib/firebase/programs";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Loader2, LogOut, Verified, ArrowRight } from "lucide-react";
+import { Loader2, LogOut, Verified, ArrowRight, ChevronDown } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 
@@ -17,6 +17,7 @@ export default function TryoutDashboardPage() {
     const [user, setUser] = useState<User | null>(null);
     const [isLoading, setIsLoading] = useState(true);
     const [certifications, setCertifications] = useState<Program[]>([]);
+    const [openDropdownId, setOpenDropdownId] = useState<string | null>(null);
 
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
@@ -115,8 +116,8 @@ export default function TryoutDashboardPage() {
                 ) : (
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                         {certifications.map((program) => (
-                            <Card key={program.id} className="relative overflow-hidden hover:shadow-lg transition-all border-slate-200/60 bg-white">
-                                <CardHeader className="pb-4 border-b border-slate-50/50 bg-gradient-to-br from-slate-50 to-white">
+                            <Card key={program.id} className="relative hover:shadow-lg transition-all border-slate-200/60 bg-white h-full flex flex-col">
+                                <CardHeader className="pb-4 border-b border-slate-50/50 bg-gradient-to-br from-slate-50 to-white rounded-t-xl">
                                     <div className="flex items-start justify-between">
                                         <div className="w-12 h-12 rounded-xl bg-blue-100 flex items-center justify-center text-blue-600 mb-4">
                                             <Verified className="w-6 h-6" />
@@ -129,20 +130,37 @@ export default function TryoutDashboardPage() {
                                     <CardDescription className="line-clamp-2 mt-2">{program.description}</CardDescription>
                                 </CardHeader>
                                 <CardContent className="pt-6">
-                                    <p className="text-sm text-slate-500 font-medium mb-4">Pilih Tipe Simulasi:</p>
-                                    <div className="flex flex-col gap-3">
-                                        <Button variant="outline" className="w-full justify-between group hover:bg-blue-50 hover:text-blue-700 hover:border-blue-200 transition-colors" asChild>
-                                            <Link href={`/tryout/exam?program=${program.id}&type=1`}>
-                                                Mulai Latihan Soal 1
+                                    <p className="text-sm text-slate-500 font-medium mb-3">Pilih Tipe Simulasi:</p>
+                                    <div className="relative">
+                                        <button
+                                            onClick={() => setOpenDropdownId(openDropdownId === program.id ? null : program.id)}
+                                            onBlur={() => setTimeout(() => { if (openDropdownId === program.id) setOpenDropdownId(null) }, 200)}
+                                            className={`w-full flex items-center justify-between bg-white border px-4 py-3 rounded-xl text-sm font-semibold transition-all duration-200 outline-none
+                                                ${openDropdownId === program.id ? 'border-blue-400 ring-4 ring-blue-500/10 text-blue-700' : 'border-slate-200 hover:border-blue-300 text-slate-700 hover:bg-slate-50/50'}`}
+                                        >
+                                            <span>-- Klik untuk memilih --</span>
+                                            <ChevronDown className={`w-4 h-4 transition-transform duration-300 ${openDropdownId === program.id ? 'rotate-180 text-blue-600' : 'text-slate-400'}`} />
+                                        </button>
+                                        
+                                        <div className={`absolute z-20 w-full mt-2 bg-white border border-slate-100 rounded-xl shadow-[0_8px_30px_rgb(0,0,0,0.08)] py-2 transition-all duration-200 origin-top
+                                            ${openDropdownId === program.id ? 'opacity-100 scale-100 translate-y-0 visible' : 'opacity-0 scale-95 -translate-y-2 invisible'}`}
+                                        >
+                                            <button 
+                                                onMouseDown={(e) => { e.preventDefault(); router.push(`/tryout/exam?program=${program.id}&type=1`); }}
+                                                className="w-full text-left px-4 py-3 text-sm font-semibold text-slate-600 hover:bg-blue-50 hover:text-blue-700 transition-colors flex items-center justify-between group"
+                                            >
+                                                Latihan Soal 1
                                                 <ArrowRight className="w-4 h-4 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300" />
-                                            </Link>
-                                        </Button>
-                                        <Button variant="outline" className="w-full justify-between group hover:bg-indigo-50 hover:text-indigo-700 hover:border-indigo-200 transition-colors" asChild>
-                                            <Link href={`/tryout/exam?program=${program.id}&type=2`}>
-                                                Mulai Latihan Soal 2
+                                            </button>
+                                            <div className="h-px bg-slate-50 mx-4"></div>
+                                            <button 
+                                                onMouseDown={(e) => { e.preventDefault(); router.push(`/tryout/exam?program=${program.id}&type=2`); }}
+                                                className="w-full text-left px-4 py-3 text-sm font-semibold text-slate-600 hover:bg-indigo-50 hover:text-indigo-700 transition-colors flex items-center justify-between group"
+                                            >
+                                                Latihan Soal 2
                                                 <ArrowRight className="w-4 h-4 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300" />
-                                            </Link>
-                                        </Button>
+                                            </button>
+                                        </div>
                                     </div>
                                 </CardContent>
                             </Card>

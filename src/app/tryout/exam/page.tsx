@@ -7,7 +7,7 @@ import { auth, db } from "@/lib/firebase/client";
 import { ExamQuestion } from "@/lib/exam-data";
 import { collection, query, where, getDocs } from "firebase/firestore";
 import { Button } from "@/components/ui/button";
-import { CheckSquare, Circle, ChevronLeft, ChevronRight, Flag, Loader2, CheckCircle2, XCircle, ArrowLeft } from "lucide-react";
+import { CheckSquare, Circle, ChevronLeft, ChevronRight, Flag, Loader2, CheckCircle2, XCircle, ArrowLeft, RefreshCw } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 
@@ -358,12 +358,27 @@ function ExamPageContent() {
                             );
                         })}
                     </div>
-                    <div className="mt-8 flex gap-3">
-                        <Button className="w-full" onClick={() => { setIsSubmitted(false); setAnswers({}); setTfAnswers({}); setCurrentIndex(0); }}>
+                    <div className="mt-10 grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <Button 
+                            className="w-full py-6 text-base font-semibold shadow-sm" 
+                            onClick={() => { 
+                                setIsSubmitted(false); 
+                                setAnswers({}); 
+                                setTfAnswers({}); 
+                                setDdAnswers({}); // Fix: Reset drag and drop answers
+                                setScore({ correct: 0, total: 0 });
+                                setCurrentIndex(0); 
+                                window.scrollTo({ top: 0, behavior: 'smooth' });
+                            }}
+                        >
+                            <RefreshCw className="w-4 h-4 mr-2" />
                             Ulangi Latihan
                         </Button>
-                        <Button variant="outline" className="w-full" asChild>
-                            <Link href="/tryout/dashboard"><ArrowLeft className="w-4 h-4 mr-2" />Kembali ke Dashboard</Link>
+                        <Button variant="outline" className="w-full py-6 text-base font-semibold border-slate-300 shadow-sm" asChild>
+                            <Link href="/tryout/dashboard">
+                                <ArrowLeft className="w-4 h-4 mr-2" />
+                                Kembali ke Dashboard
+                            </Link>
                         </Button>
                     </div>
                 </div>
