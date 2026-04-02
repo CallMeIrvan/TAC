@@ -92,7 +92,7 @@ export default function TryoutDashboardPage() {
 
             {/* Dashboard Content */}
             <div className="container mx-auto px-4 mt-8">
-                <div className="mb-8">
+                <div className="mb-8 text-center">
                     <h1 className="text-3xl font-bold text-slate-900">Dashboard Simulasi Ujian</h1>
                     <p className="text-slate-500 mt-2">Pilih modul sertifikasi di bawah ini untuk memulai latihan tryout (Tipe 1 & Tipe 2).</p>
                 </div>
@@ -114,9 +114,9 @@ export default function TryoutDashboardPage() {
                         </Button>
                     </div>
                 ) : (
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div className="flex flex-wrap justify-center gap-6">
                         {certifications.map((program) => (
-                            <Card key={program.id} className="relative hover:shadow-lg transition-all border-slate-200/60 bg-white h-full flex flex-col">
+                            <Card key={program.id} className="relative hover:shadow-lg transition-all border-slate-200/60 bg-white h-full flex flex-col w-full max-w-sm">
                                 <CardHeader className="pb-4 border-b border-slate-50/50 bg-gradient-to-br from-slate-50 to-white rounded-t-xl">
                                     <div className="flex items-start justify-between">
                                         <div className="w-12 h-12 rounded-xl bg-blue-100 flex items-center justify-center text-blue-600 mb-4">

@@ -14,12 +14,11 @@ export function Hero() {
         alt="TAC Educational Background"
         fill
         priority
-        quality={80}
         className="object-cover -z-10"
       />
       
       {/* Semi-transparent overlay to ensure text readability */}
-      <div className="absolute inset-0 bg-white/80 dark:bg-slate-950/90 backdrop-blur-[2px] -z-10"></div>
+      <div className="absolute inset-0 bg-[#FDF8F0]/80 backdrop-blur-[2px] -z-10"></div>
       
       {/* Background decoration */}
       <div className="absolute top-0 right-0 -translate-y-12 translate-x-12 w-64 h-64 bg-blue-200/20 rounded-full blur-3xl pointer-events-none"></div>
@@ -31,11 +30,11 @@ export function Hero() {
         </div>
         <h1 className="text-4xl md:text-6xl font-bold tracking-tight text-slate-900 dark:text-white mb-6">
           Bangun Masa Depan Karir<br />
-          <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-700 to-indigo-700">
+          <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-[#0F1B3D]">
             Bersama The A Class
           </span>
         </h1>
-        <p className="text-lg md:text-xl text-slate-700 dark:text-slate-300 max-w-2xl mx-auto mb-8 leading-relaxed font-medium">
+        <p className="text-lg md:text-xl text-[#0F1B3D]/70 max-w-2xl mx-auto mb-8 leading-relaxed font-medium">
           Kami menyediakan sertifikasi internasional dan kursus keahlian standar global untuk meningkatkan kompetensi Anda di era digital.
         </p>
         <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
@@ -44,7 +43,7 @@ export function Hero() {
               Lihat Program <ArrowRight className="ml-2 h-4 w-4" />
             </Link>
           </Button>
-          <Button size="lg" variant="outline" className="h-12 px-8 text-base bg-white/50 backdrop-blur-sm hover:bg-white" asChild>
+          <Button size="lg" variant="outline" className="h-12 px-8 text-base bg-white/50 backdrop-blur-sm hover:bg-white border-[#0F1B3D]/20" asChild>
             <Link href="/register">
               Daftar Sekarang
             </Link>

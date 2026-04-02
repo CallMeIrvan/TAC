@@ -5,7 +5,7 @@ import { ABOUT_CONTENT } from "@/lib/constants";
 
 export function AboutSummary() {
   return (
-    <section className="py-20 bg-white dark:bg-slate-950">
+    <section className="py-20 bg-[#FDF8F0]">
       <div className="container px-4 md:px-6 mx-auto">
         <div className="grid md:grid-cols-2 gap-12 items-center">
           <div className="order-2 md:order-1">

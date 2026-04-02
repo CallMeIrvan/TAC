@@ -46,7 +46,7 @@ const MOCK_DETAILS: Record<string, ProgramDetail> = {
       },
       {
         q: "Apakah sertifikat diakui?",
-        a: "Sertifikat kami berafiliasi dengan vendor internasional seperti Microsoft/Adobe.",
+        a: "Sertifikat kami berafiliasi dengan vendor internasional seperti Certiport.",
       },
     ],
     description: [

@@ -65,7 +65,7 @@ export default function RegisterPage() {
               </li>
               <li className="flex items-center">
                 <CheckCircle className="w-4 h-4 text-green-500 mr-2 flex-shrink-0" />
-                Sertifikat internasional (Microsoft/Adobe)
+                Sertifikat internasional (Certiport)
               </li>
               <li className="flex items-center">
                 <CheckCircle className="w-4 h-4 text-green-500 mr-2 flex-shrink-0" />

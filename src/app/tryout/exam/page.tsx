@@ -419,8 +419,8 @@ function ExamPageContent() {
             <div className="flex-1 container mx-auto px-4 py-6 flex flex-col lg:flex-row gap-6 max-w-5xl items-start justify-center">
                 
                 {/* Left Sidebar (Navigator) */}
-                <div className="w-full lg:w-72 flex-shrink-0 order-2 lg:order-1">
-                    <div className="bg-white rounded-xl border p-4 lg:sticky lg:top-24">
+                <div className="w-full lg:w-auto lg:max-w-72 flex-shrink-0 order-2 lg:order-1">
+                    <div className="bg-white rounded-xl border p-4 lg:sticky lg:top-24 inline-block w-full">
                         <p className="text-xs font-semibold text-slate-500 mb-3">Navigasi Soal</p>
                         <div className="flex flex-wrap gap-2">
                             {questions.map((q, idx) => {

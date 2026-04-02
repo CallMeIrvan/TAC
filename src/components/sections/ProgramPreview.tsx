@@ -10,7 +10,7 @@ export async function ProgramPreview() {
   const featured = PROGRAMS.slice(0, 3);
   
   return (
-    <section className="py-20 bg-slate-50/50 dark:bg-slate-900/20">
+    <section className="py-20 bg-[#F5EFE6]">
       <div className="container px-4 md:px-6 mx-auto">
         <div className="text-center mb-16 max-w-3xl mx-auto">
           <h2 className="text-3xl font-bold mb-4">Program Unggulan Pilihan</h2>
