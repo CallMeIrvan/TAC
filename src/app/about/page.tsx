@@ -28,9 +28,9 @@ export default function AboutPage() {
   return (
     <div className="flex flex-col min-h-screen">
       {/* 1. Breadcrumb */}
-      <div className="bg-[#FDF8F0] border-b border-[#E8DFD0]">
+      <div className="bg-slate-50 border-b border-slate-200">
         <div className="container mx-auto px-4 py-3">
-          <nav className="flex items-center text-sm text-[#0F1B3D]/50">
+          <nav className="flex items-center text-sm text-slate-500">
             <Link href="/" className="hover:text-blue-600 transition-colors">Beranda</Link>
             <ChevronRight className="h-4 w-4 mx-2" />
             <span className="font-semibold text-blue-600">Tentang Kami</span>
@@ -39,11 +39,11 @@ export default function AboutPage() {
       </div>
 
       {/* 2. Hero Tentang TAC */}
-      <section className="relative py-20 bg-[#0F1B3D] text-white overflow-hidden">
+      <section className="relative py-20 bg-slate-950 text-white overflow-hidden">
         <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1521737604893-d14cc237f11d?q=80&w=2084&auto=format&fit=crop')] bg-cover bg-center opacity-10"></div>
         <div className="container mx-auto px-4 relative z-10 text-center max-w-3xl">
           <h1 className="text-4xl md:text-5xl font-bold mb-6">Membangun Masa Depan Digital</h1>
-          <p className="text-xl text-blue-100 mb-8 leading-relaxed">
+          <p className="text-xl text-slate-400 mb-8 leading-relaxed">
             The A Class mendedikasikan diri untuk mencetak talenta digital berkualitas global melalui pendidikan vokasi dan sertifikasi internasional.
           </p>
         </div>
@@ -84,7 +84,7 @@ export default function AboutPage() {
       </section>
 
       {/* 4. Visi & Misi */}
-      <section className="py-20 bg-[#F5EFE6]">
+      <section className="py-20 bg-slate-50">
         <div className="container mx-auto px-4">
           <div className="grid md:grid-cols-2 gap-8">
             <Card className="bg-white border-blue-100 shadow-sm hover:shadow-md transition-shadow">
@@ -167,7 +167,7 @@ export default function AboutPage() {
                 <p className="text-slate-500 leading-relaxed">
                   Jika sudah terdaftar dan disetujui oleh admin, anda dapat login menggunakan email dan password yang kami berikan melalui WhatsApp.
                 </p>
-                <Link href="/tryout" className="inline-flex items-center gap-1.5 mt-4 text-sm font-semibold text-blue-600 hover:text-blue-700 hover:gap-2.5 transition-all duration-300">
+                <Link href="/tryout/login" className="inline-flex items-center gap-1.5 mt-4 text-sm font-semibold text-blue-600 hover:text-blue-700 hover:gap-2.5 transition-all duration-300">
                   Login Tryout <ChevronRight className="w-4 h-4" />
                 </Link>
               </div>
@@ -200,7 +200,7 @@ export default function AboutPage() {
       </section>
 
       {/* 6. Tim Pengajar */}
-      <section className="py-20 bg-[#F5EFE6]">
+      <section className="py-20 bg-slate-50">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
             <h2 className="text-3xl font-bold mb-4">Tim Pengajar</h2>

@@ -19,11 +19,11 @@ export function Navbar() {
   const pathname = usePathname();
 
   return (
-    <nav className="sticky top-0 z-50 w-full border-b border-[#1a2a5e] bg-[#0F1B3D]/95 backdrop-blur supports-[backdrop-filter]:bg-[#0F1B3D]/90">
+    <nav className="sticky top-0 z-50 w-full border-b border-slate-100 bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/90">
       <div className="container px-4 md:px-6 mx-auto h-16 flex items-center justify-between">
         <Link href="/" className="flex items-center gap-2">
           <Image src="/logo/logo-tac.png" alt="Logo TAC" width={40} height={40} className="object-contain" style={{ width: "40px", height: "40px" }} />
-          <span className="font-bold text-2xl md:text-[1.7rem] text-white hidden sm:inline-block leading-none">
+          <span className="font-bold text-2xl md:text-[1.7rem] text-slate-900 hidden sm:inline-block leading-none">
             {COMPANY_INFO.name}
           </span>
         </Link>
@@ -35,18 +35,18 @@ export function Navbar() {
               key={item.href}
               href={item.href}
               className={cn(
-                "text-sm font-medium transition-colors hover:text-blue-400",
-                pathname === item.href ? "text-blue-400 font-bold" : "text-blue-100/80"
+                "text-sm font-semibold transition-colors hover:text-blue-600",
+                pathname === item.href ? "text-blue-600" : "text-slate-600"
               )}
             >
               {item.label}
             </Link>
           ))}
-          <div className="flex items-center gap-2">
-            <Button asChild className="bg-blue-600 text-white border border-blue-500 hover:bg-blue-500 transition-colors">
-              <Link href="/tryout/login">Akses Tryout</Link>
-            </Button>
-            <Button asChild className="bg-transparent text-white border border-white/30 hover:bg-white hover:text-[#0F1B3D] transition-colors">
+          <div className="flex items-center gap-6">
+            <Link href="/tryout/login" className="text-sm font-semibold text-slate-800 hover:text-blue-600 transition-colors">
+              Akses Tryout
+            </Link>
+            <Button asChild className="bg-blue-600 text-white hover:bg-blue-700 transition-colors rounded-lg font-semibold">
               <Link href="/register">Daftar Sekarang</Link>
             </Button>
           </div>
@@ -54,7 +54,7 @@ export function Navbar() {
 
         {/* Mobile Toggle */}
         <button
-          className="md:hidden text-white"
+          className="md:hidden text-slate-900"
           onClick={() => setIsOpen(!isOpen)}
         >
           {isOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
@@ -63,24 +63,26 @@ export function Navbar() {
 
       {/* Mobile Nav */}
       {isOpen && (
-        <div className="md:hidden border-t border-[#1a2a5e] bg-[#0F1B3D] p-4 flex flex-col gap-4">
+        <div className="md:hidden border-t border-slate-100 bg-white p-4 flex flex-col gap-4 shadow-lg absolute w-full left-0">
           {NAV_ITEMS.map((item) => (
             <Link
               key={item.href}
               href={item.href}
-              className="text-sm font-medium py-2 text-blue-100/80 hover:text-blue-400"
+              className="text-sm font-semibold py-2 text-slate-600 hover:text-blue-600"
               onClick={() => setIsOpen(false)}
             >
               {item.label}
             </Link>
           ))}
-          <div className="flex flex-col gap-2">
-            <Button asChild className="w-full bg-blue-600 text-white border border-blue-500 hover:bg-blue-500 transition-colors">
-              <Link href="/tryout/login" onClick={() => setIsOpen(false)}>
-                Akses Tryout
-              </Link>
-            </Button>
-            <Button asChild className="w-full bg-transparent text-white border border-white/30 hover:bg-white hover:text-[#0F1B3D] transition-colors">
+          <Link
+            href="/tryout/login"
+            className="text-sm font-semibold py-2 text-slate-800 hover:text-blue-600"
+            onClick={() => setIsOpen(false)}
+          >
+            Akses Tryout
+          </Link>
+          <div className="pt-2">
+            <Button asChild className="w-full bg-blue-600 text-white hover:bg-blue-700 transition-colors">
               <Link href="/register" onClick={() => setIsOpen(false)}>
                 Daftar Sekarang
               </Link>

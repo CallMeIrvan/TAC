@@ -5,7 +5,7 @@ import { MapPin, Phone, Mail, Instagram, Facebook } from 'lucide-react';
 
 export function Footer() {
   return (
-    <footer className="bg-[#0F1B3D] text-blue-100 mt-auto">
+    <footer className="bg-slate-950 text-slate-200 mt-auto">
       <div className="container px-4 md:px-6 py-12 mx-auto">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {/* Brand & About */}
@@ -14,7 +14,7 @@ export function Footer() {
                <Image src="/logo/logo-tac.png" alt="Logo TAC" width={48} height={48} className="object-contain bg-white rounded-md p-1" style={{ width: "auto", height: "auto" }} />
                <h3 className="text-xl font-bold text-white">{COMPANY_INFO.name}</h3>
             </div>
-            <p className="text-blue-200/70 text-sm leading-relaxed mb-4">
+            <p className="text-slate-400 text-sm leading-relaxed mb-4">
               Lembaga Pendidikan & Sertifikasi Profesional.
               Membangun masa depan dengan keterampilan berbasis teknologi.
             </p>
@@ -31,7 +31,7 @@ export function Footer() {
           {/* Quick Links */}
           <div>
             <h3 className="text-lg font-bold text-white mb-4">Link Cepat</h3>
-            <ul className="space-y-2 text-sm text-blue-200/60">
+            <ul className="space-y-2 text-sm text-slate-400">
               <li><Link href="/about" className="hover:text-white">Tentang Kami</Link></li>
               <li><Link href="/program" className="hover:text-white">Program Kami</Link></li>
 {/* Link removed */}
@@ -42,15 +42,15 @@ export function Footer() {
           {/* Contact */}
           <div>
             <h3 className="text-lg font-bold text-white mb-4">Hubungi Kami</h3>
-            <ul className="space-y-4 text-sm text-blue-200/60">
+            <ul className="space-y-4 text-sm text-slate-400">
               <li className="flex items-center gap-3">
-                <Phone className="h-4 w-4 shrink-0 text-green-500" />
+                <Phone className="h-4 w-4 shrink-0 text-emerald-500" />
                 <a href={`https://wa.me/${COMPANY_INFO.contacts.whatsapp.replace(/\+/g, '')}`} className="hover:text-white">
                   {COMPANY_INFO.contacts.whatsapp}
                 </a>
               </li>
               <li className="flex items-center gap-3">
-                <Mail className="h-4 w-4 shrink-0 text-yellow-500" />
+                <Mail className="h-4 w-4 shrink-0 text-amber-500" />
                 <a href={`mailto:${COMPANY_INFO.contacts.email}`} className="hover:text-white">
                   {COMPANY_INFO.contacts.email}
                 </a>
@@ -86,8 +86,8 @@ export function Footer() {
           </div>
         </div>
         
-        <div className="border-t border-blue-900/50 mt-8 pt-8 text-center text-xs text-blue-200/40">
-          <p>&copy; {new Date().getFullYear()} {COMPANY_INFO.name}. All rights reserved.</p>
+        <div className="border-t border-white/10 mt-8 pt-8 text-center text-xs text-slate-500">
+          <p>&copy; {new Date().getFullYear()} The A Class. All rights reserved.</p>
         </div>
       </div>
     </footer>

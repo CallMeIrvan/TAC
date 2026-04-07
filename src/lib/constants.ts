@@ -1,7 +1,7 @@
 
 
 export const COMPANY_INFO = {
-  name: "The A Class (TAC)",
+  name: "The A Class",
   address: "Jl. Tukad Yeh Aya IX No.21c, Renon, Denpasar Selatan, Kota Denpasar, Bali 80226",
   location_lpk: "Jl. Tukad Badung No.18B, Renon, Denpasar, Bali",
   contacts: {

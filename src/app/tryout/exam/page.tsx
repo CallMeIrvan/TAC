@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { CheckSquare, Circle, ChevronLeft, ChevronRight, Flag, Loader2, CheckCircle2, XCircle, ArrowLeft, RefreshCw } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
+import { SaaSAlert } from '@/lib/swal';
 
 import { Suspense } from "react";
 
@@ -118,7 +119,11 @@ function ExamPageContent() {
                  const e = error as Error;
                  console.error("Failed to load exams", e);
                  setFetchErrorMsg(e.message || "Unknown error occurred.");
-                 alert("Error gagal mengambil soal dari Firebase Server:\n\n" + e.message); // ALERT KERAS AGAR USER TAHU JIKA INI PERMISSION ERROR
+                 SaaSAlert.fire({
+                     title: 'Kendala Server',
+                     text: "Gagal mengambil soal dari server:\n\n" + e.message,
+                     confirmButtonText: 'Tutup'
+                 });
              } finally {
                  setIsLoadingQuestions(false);
              }

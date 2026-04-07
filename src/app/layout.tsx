@@ -1,27 +1,16 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono, Oswald, Rubik } from "next/font/google";
+import { Manrope, Urbanist } from "next/font/google";
 import "./globals.css";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const manrope = Manrope({
+  variable: "--font-manrope",
   subsets: ["latin"],
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
-
-const oswald = Oswald({
-  variable: "--font-oswald",
-  subsets: ["latin"],
-  weight: ["200", "300", "400", "500", "600", "700"],
-});
-
-const rubik = Rubik({
-  variable: "--font-rubik",
+const urbanist = Urbanist({
+  variable: "--font-urbanist",
   subsets: ["latin"],
 });
 
@@ -38,7 +27,7 @@ export default function RootLayout({
   return (
     <html lang="id">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} ${oswald.variable} ${rubik.variable} antialiased min-h-screen flex flex-col bg-background`}
+        className={`${manrope.variable} ${urbanist.variable} font-sans antialiased min-h-screen flex flex-col bg-background`}
       >
         <Navbar />
         <main className="flex-1">

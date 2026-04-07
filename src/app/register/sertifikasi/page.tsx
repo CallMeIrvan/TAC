@@ -14,8 +14,8 @@ import { Check, ChevronRight, Loader2 } from "lucide-react";
 import { useSearchParams } from "next/navigation";
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 import { db } from "@/lib/firebase/client";
-
 import { Suspense } from 'react';
+import { SaaSAlert } from '@/lib/swal';
 
 function SertifikasiRegistrationForm() {
   const searchParams = useSearchParams();
@@ -74,12 +74,25 @@ function SertifikasiRegistrationForm() {
 
       const waUrl = `https://wa.me/${adminPhone}?text=${encodeURIComponent(message)}`;
       
-      // 4. Redirect 
+      // 4. Show success alert before redirecting
+      await SaaSAlert.fire({
+        title: 'Pendaftaran Berhasil!',
+        text: 'Data Anda telah tersimpan. Mengalihkan ke WhatsApp Admin...',
+        timer: 2000,
+        showConfirmButton: false,
+        timerProgressBar: true
+      });
+
+      // 5. Redirect 
       window.location.href = waUrl;
 
     } catch (error) {
       console.error(error);
-      alert("Gagal mengirim data. Pastikan koneksi internet stabil.");
+      SaaSAlert.fire({
+        title: 'Gagal',
+        text: 'Gagal mengirim data. Pastikan koneksi internet stabil.',
+        confirmButtonText: 'Tutup'
+      });
     } finally {
       setIsSubmitting(false);
     }

@@ -69,9 +69,9 @@ export default function ProgramPage() {
   }, [programs, selectedCategories, selectedLevels, selectedPriceRanges]);
 
   return (
-    <div className="flex flex-col min-h-screen bg-[#FDF8F0]">
+    <div className="flex flex-col min-h-screen bg-slate-50">
       {/* Breadcrumb */}
-      <div className="bg-white border-b border-[#E8DFD0]">
+      <div className="bg-white border-b border-slate-100">
         <div className="container mx-auto px-4 py-3">
           <nav className="flex items-center text-sm text-slate-500">
             <Link href="/" className="hover:text-blue-600 transition-colors">Beranda</Link>

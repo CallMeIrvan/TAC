@@ -8,21 +8,30 @@ import { auth } from "@/lib/firebase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Loader2, Lock, Info, ArrowRight, Eye, EyeOff } from "lucide-react";
+import { Loader2, Lock, ArrowRight, Eye, EyeOff, Info } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
+import { SaaSAlert } from '@/lib/swal';
 
 export default function TryoutLoginPage() {
     const router = useRouter();
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
-    const [error, setError] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        setError(null);
+
+        if (!email.trim() || !password.trim()) {
+            SaaSAlert.fire({
+                title: 'Gagal Login',
+                text: 'Harap masukkan email dan password Anda untuk melanjutkan.',
+                confirmButtonText: 'Coba Lagi'
+            });
+            return;
+        }
+
         setIsLoading(true);
 
         try {
@@ -30,20 +39,30 @@ export default function TryoutLoginPage() {
             router.push("/tryout/dashboard");
         } catch (err) {
             if (err instanceof FirebaseError) {
+                let errorMessage = "Terjadi kesalahan saat login.";
                 switch (err.code) {
                     case "auth/invalid-credential":
                     case "auth/user-not-found":
                     case "auth/wrong-password":
-                        setError("Email atau password tidak valid.");
+                        errorMessage = "Email atau password tidak valid.";
                         break;
                     case "auth/too-many-requests":
-                        setError("Terlalu banyak percobaan gagal. Silakan coba lagi nanti.");
+                        errorMessage = "Terlalu banyak percobaan gagal. Silakan coba lagi nanti.";
                         break;
                     default:
-                        setError("Terjadi kesalahan saat login: " + err.message);
+                        errorMessage = err.message;
                 }
+                SaaSAlert.fire({
+                    title: 'Login Gagal',
+                    text: errorMessage,
+                    confirmButtonText: 'Coba Lagi'
+                });
             } else {
-                setError("Terjadi kesalahan yang tidak diketahui.");
+                SaaSAlert.fire({
+                    title: 'Login Gagal',
+                    text: "Terjadi kesalahan yang tidak diketahui.",
+                    confirmButtonText: 'Oke'
+                });
             }
         } finally {
             setIsLoading(false);
@@ -51,24 +70,24 @@ export default function TryoutLoginPage() {
     };
 
     return (
-        <div className="min-h-screen bg-[#FDF8F0] flex items-center justify-center p-4 relative overflow-hidden">
+        <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4 relative overflow-hidden">
             {/* Decorative background elements */}
             <div className="absolute top-0 left-0 w-96 h-96 bg-blue-500/5 rounded-full -translate-x-1/2 -translate-y-1/2 blur-3xl" />
-            <div className="absolute bottom-0 right-0 w-96 h-96 bg-[#0F1B3D]/5 rounded-full translate-x-1/2 translate-y-1/2 blur-3xl" />
+            <div className="absolute bottom-0 right-0 w-96 h-96 bg-slate-900/5 rounded-full translate-x-1/2 translate-y-1/2 blur-3xl" />
 
             <div className="w-full max-w-md relative z-10">
                 {/* Logo & Brand Top */}
                 <div className="text-center mb-8">
                     <Link href="/" className="inline-flex items-center gap-2 group">
                         <Image src="/logo/logo-tac.png" alt="Logo TAC" width={40} height={40} style={{ width: "auto", height: "auto" }} />
-                        <span className="font-bold text-xl text-[#0F1B3D] group-hover:text-blue-600 transition-colors">The A Class</span>
+                        <span className="font-bold text-xl text-slate-900 group-hover:text-blue-600 transition-colors">The A Class</span>
                     </Link>
                 </div>
 
                 {/* Login Card */}
-                <div className="bg-white rounded-2xl shadow-[0_8px_40px_rgb(15,27,61,0.08)] border border-[#E8DFD0]/50 overflow-hidden">
+                <div className="bg-white rounded-2xl shadow-[0_8px_40px_rgb(15,23,42,0.08)] border border-slate-200/50 overflow-hidden">
                     {/* Card Header with gradient */}
-                    <div className="bg-gradient-to-br from-[#0F1B3D] to-[#1a2f6e] p-8 text-center">
+                    <div className="bg-gradient-to-br from-slate-900 to-slate-800 p-8 text-center">
                         <div className="w-16 h-16 bg-white/10 backdrop-blur-sm rounded-2xl flex items-center justify-center mx-auto mb-5 border border-white/20">
                             <Lock className="w-8 h-8 text-blue-300" />
                         </div>
@@ -79,16 +98,10 @@ export default function TryoutLoginPage() {
                     </div>
 
                     {/* Form */}
-                    <form onSubmit={handleSubmit}>
+                    <form onSubmit={handleSubmit} noValidate>
                         <div className="p-8 space-y-5">
-                            {error && (
-                                <div className="p-3.5 text-sm text-red-700 bg-red-50 border border-red-100 rounded-xl flex items-start gap-2">
-                                    <Info className="w-4 h-4 mt-0.5 shrink-0" />
-                                    {error}
-                                </div>
-                            )}
                             <div className="space-y-2">
-                                <Label htmlFor="email" className="text-[#0F1B3D] font-semibold text-sm">Email</Label>
+                                <Label htmlFor="email" className="text-slate-900 font-semibold text-sm">Email</Label>
                                 <Input
                                     id="email"
                                     type="email"
@@ -97,11 +110,11 @@ export default function TryoutLoginPage() {
                                     onChange={(e) => setEmail(e.target.value)}
                                     required
                                     disabled={isLoading}
-                                    className="h-12 rounded-xl border-[#E8DFD0] bg-[#FDF8F0]/50 focus:border-blue-500 focus:ring-blue-500/20 text-[#0F1B3D] placeholder:text-[#0F1B3D]/30"
+                                    className="h-12 rounded-xl border-slate-200 bg-slate-50/50 focus:border-blue-500 focus:ring-blue-500/20 text-slate-900 placeholder:text-slate-400"
                                 />
                             </div>
                             <div className="space-y-2">
-                                <Label htmlFor="password" className="text-[#0F1B3D] font-semibold text-sm">Password</Label>
+                                <Label htmlFor="password" className="text-slate-900 font-semibold text-sm">Password</Label>
                                 <div className="relative">
                                     <Input
                                         id="password"
@@ -111,12 +124,12 @@ export default function TryoutLoginPage() {
                                         onChange={(e) => setPassword(e.target.value)}
                                         required
                                         disabled={isLoading}
-                                        className="h-12 rounded-xl border-[#E8DFD0] bg-[#FDF8F0]/50 focus:border-blue-500 focus:ring-blue-500/20 text-[#0F1B3D] placeholder:text-[#0F1B3D]/30 pr-12"
+                                        className="h-12 rounded-xl border-slate-200 bg-slate-50/50 focus:border-blue-500 focus:ring-blue-500/20 text-slate-900 placeholder:text-slate-400 pr-12"
                                     />
                                     <button
                                         type="button"
                                         onClick={() => setShowPassword(!showPassword)}
-                                        className="absolute right-3 top-1/2 -translate-y-1/2 text-[#0F1B3D]/40 hover:text-blue-600 transition-colors p-1"
+                                        className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-blue-600 transition-colors p-1"
                                         tabIndex={-1}
                                     >
                                         {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
@@ -153,8 +166,8 @@ export default function TryoutLoginPage() {
                             <Info className="w-4 h-4 text-blue-600" />
                         </div>
                         <div>
-                            <p className="text-sm font-semibold text-[#0F1B3D] mb-1">Belum punya akun?</p>
-                            <p className="text-xs text-[#0F1B3D]/60 leading-relaxed mb-3">
+                            <p className="text-sm font-semibold text-slate-900 mb-1">Belum punya akun?</p>
+                            <p className="text-xs text-slate-600 leading-relaxed mb-3">
                                 Untuk mengakses tryout, anda harus mendaftar program sertifikasi terlebih dahulu. Setelah pendaftaran disetujui oleh Admin, akun login akan dikirimkan melalui WhatsApp.
                             </p>
                             <Link 
